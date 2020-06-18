@@ -2,6 +2,41 @@
 //ใส่ Line Notify Token ที่ได้สร้างไว้ https://notify-bot.line.me/en/
 $linenotifytoken = 'xxxxxxxxxxxxxxxxxxxxxxxxxxx';
 
+//รูปเรดาร์ฝนหนองแขม
+$img1 ='http://weather.bangkok.go.th/FTPCustomer/radar/pics/nkradarh.jpg';
+//รูปเรดาร์ฝนหนองจอก
+$img2 ='http://weather.bangkok.go.th/FTPCustomer/radar/pics/radarh.jpg';
+
+//Download ไฟล์จาก url
+$downloadedFileContents = file_get_contents($img1);
+//ตรวจสอบว่า Download ได้สำเร็จไหม
+if($downloadedFileContents === false){
+    throw new Exception('Failed to download file at: ' . $img1);
+}
+//ชื่อไฟล์ที่ Save
+$fileName = 'rainradar1.jpg';
+//เซฟไฟล์
+$save = file_put_contents($fileName, $downloadedFileContents);
+//ตรวจสอบว่า Save สำเร็จไหม
+if($save === false){
+    throw new Exception('Failed to save file to: ' , $fileName);
+}
+
+//Download ไฟล์จาก url
+$downloadedFileContents = file_get_contents($img2);
+//ตรวจสอบว่า Download ได้สำเร็จไหม
+if($downloadedFileContents === false){
+    throw new Exception('Failed to download file at: ' . $img1);
+}
+//ชื่อไฟล์ที่ Save
+$fileName = 'rainradar2.jpg';
+//เซฟไฟล์
+$save = file_put_contents($fileName, $downloadedFileContents);
+//ตรวจสอบว่า Save สำเร็จไหม
+if($save === false){
+    throw new Exception('Failed to save file to: ' , $fileName);
+}
+
 /*---------------------- ระบบส่งข้อความและรูป Line Notify ----------------------*/
 function send_notify_message($line_api, $access_token, $message_data){
    $headers = array('Method: POST', 'Content-type: multipart/form-data', 'Authorization: Bearer '.$access_token );
@@ -31,13 +66,12 @@ $line_api = 'https://notify-api.line.me/api/notify';
 $access_token = $linenotifytoken;
     
 //ส่งรูปเรดาร์ฝน
-$image_thumbnail_url = 'http://localhost';  // max size 240x240px JPEG
 $message = "ภาพเรดาร์น้ำฝนล่าสุด จากสถานีเรดาร์หนองแขม";
-$image_fullsize_url = 'http://weather.bangkok.go.th/FTPCustomer/radar/pics/nkradarh.jpg';
+$imageFile = new CurlFile('./rainradar1.jpg', 'image/jpg', 'rainradarline1.jpg');
+
 $message_data = array(
-	'imageThumbnail' => $image_thumbnail_url,
-	'imageFullsize' => $image_fullsize_url,
-	'message' => $message
+	'message' => $message,
+	'imageFile' => $imageFile
 );
 $result = send_notify_message($line_api, $access_token, $message_data);
 echo '<pre>';
@@ -45,7 +79,7 @@ print_r($result);
 echo '</pre>';
 
 $message = "ภาพเรดาร์น้ำฝนล่าสุด จากสถานีเรดาร์หนองจอก";
-$image_fullsize_url = 'http://weather.bangkok.go.th/FTPCustomer/radar/pics/radarh.jpg';
+$imageFile = new CurlFile('./rainradar2.jpg', 'image/jpg', 'rainradarline2.jpg');
 $result = send_notify_message($line_api, $access_token, $message_data);
 echo '<pre>';
 print_r($result);
