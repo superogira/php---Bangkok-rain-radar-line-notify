@@ -7,3 +7,6 @@ https://notify-bot.line.me/doc/en/
 https://weather.tmd.go.th/bma_nkm.php<br>
 http://weather.bangkok.go.th/radar/RadarHighResolutionNk.aspx
 
+รูปจะ Update ชั่วโมงละครั้ง ที่นาทีที่ 5 และวินาทีที่ 5 ของแต่ละชั่วโมง
+ถ้าดึงรูปก่อนเวลา ก็จะได้รูปเรดาร์ฝนของชั่วโมงก่อนไป
+เพราะฉนั้นแล้วควรเรียก Url ดึงรูปไปตอนนาทีที่ 6 เป็นต้นไป
