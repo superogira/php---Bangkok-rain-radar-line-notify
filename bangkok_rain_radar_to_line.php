@@ -2,40 +2,29 @@
 //ใส่ Line Notify Token ที่ได้สร้างไว้ https://notify-bot.line.me/en/
 $linenotifytoken = 'xxxxxxxxxxxxxxxxxxxxxxxxxxx';
 
-//รูปเรดาร์ฝนหนองแขม
+//URL รูปเรดาร์ฝนหนองแขม
 $img1 ='http://weather.bangkok.go.th/FTPCustomer/radar/pics/nkradarh.jpg';
-//รูปเรดาร์ฝนหนองจอก
+//ชื่อไฟล์ที่จะ Save ตอนโหลดมาเก็บไว้ก่อนส่ง
+$fileName1 = 'rainradar1.jpg';
+//URL รูปเรดาร์ฝนหนองจอก 
 $img2 ='http://weather.bangkok.go.th/FTPCustomer/radar/pics/radarh.jpg';
+//ชื่อไฟล์ที่จะ Save ตอนโหลดมาเก็บไว้ก่อนส่ง
+$fileName2 = 'rainradar2.jpg';
 
-//Download ไฟล์จาก url
-$downloadedFileContents = file_get_contents($img1);
-//ตรวจสอบว่า Download ได้สำเร็จไหม
-if($downloadedFileContents === false){
-    throw new Exception('Failed to download file at: ' . $img1);
-}
-//ชื่อไฟล์ที่ Save
-$fileName = 'rainradar1.jpg';
-//เซฟไฟล์
-$save = file_put_contents($fileName, $downloadedFileContents);
-//ตรวจสอบว่า Save สำเร็จไหม
-if($save === false){
-    throw new Exception('Failed to save file to: ' , $fileName);
+/*---------------------- ระบบ Download รูปล่าสุดมาเก็บไว้ก่อนจะอัพโหลดส่งไปเข้า Line
+(เนื่องด้วยถ้าเอา URL ให้ Line ดึงไปตรง ๆ เลย รูปเรดาร์จะเป็นรูปเก่า ไม่อัพเดตล่าสุด) ----------------------*/
+function download_rain_radar_image($url, $filename){
+   //Download ไฟล์จาก url
+	$downloadedFileContents = file_get_contents($url);
+	//ชื่อไฟล์ที่ Save
+	$fileName = $filename;
+	//เซฟไฟล์
+	$save = file_put_contents($fileName, $downloadedFileContents);
 }
 
-//Download ไฟล์จาก url
-$downloadedFileContents = file_get_contents($img2);
-//ตรวจสอบว่า Download ได้สำเร็จไหม
-if($downloadedFileContents === false){
-    throw new Exception('Failed to download file at: ' . $img1);
-}
-//ชื่อไฟล์ที่ Save
-$fileName = 'rainradar2.jpg';
-//เซฟไฟล์
-$save = file_put_contents($fileName, $downloadedFileContents);
-//ตรวจสอบว่า Save สำเร็จไหม
-if($save === false){
-    throw new Exception('Failed to save file to: ' , $fileName);
-}
+//ทำการ Download และ Save รูป
+download_rain_radar_image ($img1,$fileName1);
+download_rain_radar_image ($img2,$fileName2);
 
 /*---------------------- ระบบส่งข้อความและรูป Line Notify ----------------------*/
 function send_notify_message($line_api, $access_token, $message_data){
@@ -61,27 +50,23 @@ function send_notify_message($line_api, $access_token, $message_data){
 return $return_array;
 }
 
-/*---------------------- เรียกตัวแปรกับระบบส่งข้อความและรูป Line Notify ----------------------*/
-$line_api = 'https://notify-api.line.me/api/notify';
-$access_token = $linenotifytoken;
-    
-//ส่งรูปเรดาร์ฝน
+/*---------------------- ระบบเรียกตัวแปร และเรียกระบบส่งข้อความและรูป Line Notify ----------------------*/
+function notify_data($access_token, $filename, $message){
+	$line_api = 'https://notify-api.line.me/api/notify';
+	
+	$imageFile = new CurlFile('./'.$filename, 'image/jpg', $filename.'.jpg');
+	$message_data = array(
+		'message' => $message,
+		'imageFile' => $imageFile
+	);
+	$result = send_notify_message($line_api, $access_token, $message_data);
+	echo '<pre>';
+	print_r($result);
+	echo '</pre>';
+}
+
 $message = "ภาพเรดาร์น้ำฝนล่าสุด จากสถานีเรดาร์หนองแขม";
-$imageFile = new CurlFile('./rainradar1.jpg', 'image/jpg', 'rainradarline1.jpg');
-
-$message_data = array(
-	'message' => $message,
-	'imageFile' => $imageFile
-);
-$result = send_notify_message($line_api, $access_token, $message_data);
-echo '<pre>';
-print_r($result);
-echo '</pre>';
-
+notify_data($linenotifytoken, $fileName1, $message);
 $message = "ภาพเรดาร์น้ำฝนล่าสุด จากสถานีเรดาร์หนองจอก";
-$imageFile = new CurlFile('./rainradar2.jpg', 'image/jpg', 'rainradarline2.jpg');
-$result = send_notify_message($line_api, $access_token, $message_data);
-echo '<pre>';
-print_r($result);
-echo '</pre>';
+notify_data($linenotifytoken, $fileName2, $message);
 ?>
