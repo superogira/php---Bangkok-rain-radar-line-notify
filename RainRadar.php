@@ -1,4 +1,7 @@
 <?php
+include './vendor/autoload.php';
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
 
 class RainRadarNotify {
   private $lineAPI = 'https://notify-api.line.me/api/notify';
@@ -7,8 +10,8 @@ class RainRadarNotify {
   private $imagePath = './images/';
   private $images = array();
 
-  function __construct($lineToken) {
-    $this->lineToken = $lineToken;
+  function __construct() {
+    $this->lineToken = $_ENV['LINE_TOKEN'];
     $this->header = array('Method: POST', 'Content-type: multipart/form-data', 'Authorization: Bearer ' . $this->lineToken);
   }
 
