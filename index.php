@@ -1,5 +1,5 @@
 <?php
-include './class.php';
+include './RainRadar.php';
 
 $RainRadar = new RainRadarNotify();
 $RainRadar->setImage('http://weather.bangkok.go.th/FTPCustomer/radar/pics/nkradarh.jpg', 'rainradar1.jpg', 'หนองแขม');
