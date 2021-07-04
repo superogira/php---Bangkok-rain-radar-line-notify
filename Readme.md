@@ -1,0 +1,1 @@
+- ใส่ Line Notify Token ที่ได้สร้างไว้ https://notify-bot.line.me/en/ ลงในบรรทัดที่ 2
