@@ -7,14 +7,14 @@ class RainRadarNotify
 {
     private $lineAPI = 'https://notify-api.line.me/api/notify';
     private $lineToken;
-    private $header;
     private $imagePath = './images/';
     private $images = array();
+    private $client;
 
     public function __construct()
     {
         $this->lineToken = $_ENV['LINE_TOKEN'];
-        $this->header = array('Method: POST', 'Content-type: multipart/form-data', 'Authorization: Bearer ' . $this->lineToken);
+        $this->client = new \GuzzleHttp\Client();
     }
 
     public function setImagePath($path)
@@ -38,31 +38,28 @@ class RainRadarNotify
 
     public function sendNotify()
     {
-
         foreach ($this->images as $image) {
-            $imageFile = new CurlFile($this->imagePath . $image[0], 'image/jpg', $image[0] . '.jpg');
-            $data = array(
-                'message' => 'ภาพเรดาร์น้ำฝนล่าสุด จากสถานีเรดาร์' . $image[1],
-                'imageFile' => $imageFile,
-            );
+            try {
+                $response = $this->client->request('POST', $this->lineAPI, [
+                    'multipart' => [
+                        [
+                            'name' => 'message',
+                            'contents' => 'ภาพเรดาร์น้ำฝนล่าสุด จากสถานีเรดาร์' . $image[1],
+                        ],
+                        [
+                            'name' => 'imageFile',
+                            'contents' => fopen($this->imagePath . $image[0], 'r'),
+                        ],
+                    ],
+                    'headers' => [
+                        'Authorization' => 'Bearer ' . $this->lineToken,
+                    ],
+                ]);
 
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $this->lineAPI);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $this->header);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            $result = curl_exec($ch);
-
-            if (curl_error($ch)) {
-                $response = array('status' => '000: send fail', 'message' => curl_error($ch));
-            } else {
-                $response = json_decode($result, true);
+                echo $response->getBody();
+            } catch (Exception $e) {
+                echo 'Error: ' . $e->getMessage();
             }
-
-            curl_close($ch);
         }
-
-        return print_r(json_encode($response));
     }
 }
