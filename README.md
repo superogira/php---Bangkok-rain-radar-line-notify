@@ -25,8 +25,8 @@
   // ถ้าต้องการดึงรูปจากเรดาร์อื่น ๆ ให้ไปดู Url ของรูปจากแต่ละเรดาร์ที่นี่
   // https://weather.tmd.go.th/bma_nkm.php
   // http://weather.bangkok.go.th/radar/RadarHighResolutionNk.aspx
-  $RainRadar->setImage('ลิงก์รูป1', 'ชื่อรูป2.jpg', 'ชื่อสถานที่1');
-  $RainRadar->setImage('ลิงก์รูป2', 'ชื่อรูป2.jpg', 'ชื่อสถานที่2');
+  $RainRadar->addImage('ลิงก์รูป1', 'ชื่อรูป1.jpg', 'ชื่อสถานที่1');
+  $RainRadar->addImage('ลิงก์รูป2', 'ชื่อรูป2.jpg', 'ชื่อสถานที่2');
 
   // เรียกดูรายชื่อรูป
   $RainRadar->getImages();
