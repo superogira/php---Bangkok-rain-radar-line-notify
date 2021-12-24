@@ -23,7 +23,7 @@ class RainRadarNotify {
     return json_encode($this->images);
   }
 
-  public function setImage($url, $filename, $message) {
+  public function addImage($url, $filename, $message) {
     $content = file_get_contents($url);
 
     file_put_contents($this->imagePath . $filename, $content);
